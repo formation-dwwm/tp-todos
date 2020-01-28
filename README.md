@@ -4,6 +4,14 @@
 
 ### Quick-Start
 
+Clonez le repository, puis pensez à effectuer un `npm install` afin de récupérer les dépendances.
+
+Vous pourrez ensuite démarrer le serveur avec la commande `npm run server:start`, celui-ci communique en http sur le port 3000.
+
+L'adresse de votre serveur sera donc `http://localhost:3000`;
+
+### Description
+
 L'API fournie est une API REST, proposant une unique collection de `todos`.
 
 L'URI de base de l'API est `<domain>/api/v1/`.
@@ -21,12 +29,12 @@ interface Todo {
 
 ### Résumé
 
-**`/api/todos`**
+**`/api/v1/todos`**
 
 **GET** Récupérer la liste des Todos  
 **POST** Créer un Todo
 
-**`/api/todos/1`**
+**`/api/v1/todos/1`**
 
 **GET** Récupère informations du Todo avec id=1  
 **PATCH** Met à jour le Todo avec id=1 avec les champs fournis 

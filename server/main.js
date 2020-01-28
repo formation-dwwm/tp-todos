@@ -4,6 +4,9 @@ const app = express()
 const bodyParser = require('body-parser')
 const TodoService = require('./TodoService');
 
+const API_VER = 1;
+const API_BASE = `/api/${API_VER}`;
+
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(path.resolve(__dirname, './data/todos.db'), (err) => {
     if (err) {
@@ -80,7 +83,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/todos', function (req, res) {
+app.get('/', (req, res) => {
+    res.send("Nothing here... Please use API at /api/v1 endpoint.")
+});
+
+app.get(API_BASE + '/todos', function (req, res) {
     todoSvc.all({
         limit: req.query.limit,
         offset: req.query.offset
@@ -89,7 +96,7 @@ app.get('/todos', function (req, res) {
         .catch(err => res.status(500).json({ error: err.message }));
 })
 
-app.post('/todos', (req, res) => {
+app.post(API_BASE + '/todos', (req, res) => {
     const sql = `
     INSERT INTO todos (title, content, done, createdAt) VALUES ($title, $content, $done, $createdAt)
     `;
@@ -126,7 +133,7 @@ const formatTodo = (todo) => ({
     createdAt: todo.createdAt
 });
 
-app.get('/todos/:id', function (req, res) {
+app.get(API_BASE + '/todos/:id', function (req, res) {
     todoSvc.get(req.params.id)
         .then(todo => {
             if(todo){
@@ -138,7 +145,7 @@ app.get('/todos/:id', function (req, res) {
         .catch(err => res.status(500).json({ error: err.message }));
 })
 
-app.patch('/todos/:id', (req, res) => {
+app.patch(API_BASE + '/todos/:id', (req, res) => {
     todoSvc.patch(req.params.id, {
         limit: req.query.limit,
         offset: req.query.offset
@@ -172,7 +179,7 @@ app.patch('/todos/:id', (req, res) => {
     });
 })
 
-app.delete('/todos/:id', (req, res) => {
+app.delete(API_BASE + '/todos/:id', (req, res) => {
     const sql = `
     DELETE FROM todos WHERE id=?
     `;
@@ -186,5 +193,5 @@ app.delete('/todos/:id', (req, res) => {
 })
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+  console.log('Server started, API listening on http://localhost:3000/ !')
 })
