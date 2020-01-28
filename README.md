@@ -31,7 +31,7 @@ interface Todo {
 **`/api/todos/1`**
 
 **GET** Récupère informations du Todo avec id=1  
-**PATCH** Met à jour le Todo avec id=1 avec les champs fournis  
+**PATCH** Met à jour le Todo avec id=1 avec les champs fournis 
 **DELETE** Supprime le Todo avec id=1  
 
 
@@ -59,7 +59,7 @@ L'application doit présenter au minimum trois interfaces à l'utilisateur, selo
 Concevoir et développer l'application client avec les trois interfaces demandées.
 
 **Todo or not to do**  
-Le statut "terminé" des Todos doit pouvoir être modifié depuis la liste des todos comme depuis les details de l'un.
+Le statut "terminé" des Todos doit pouvoir être modifié depuis la liste des todos comme depuis les details de l'un. De la même façon il doit pouvoir être supprimé.
 
 **What's in the box**  
 Cliquer sur le titre d'un Todo depuis la liste doit afficher les détails de celui-ci.

@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const TodoService = require('./TodoService');
 
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(path.resolve(__dirname, './data/todos.db'), (err) => {
@@ -64,6 +65,8 @@ const db = new sqlite3.Database(path.resolve(__dirname, './data/todos.db'), (err
     });
   });
 
+const todoSvc = new TodoService(db);
+
 app.use(bodyParser.json());
 
 // Disable CORS
@@ -78,18 +81,12 @@ app.use((req, res, next) => {
 });
 
 app.get('/todos', function (req, res) {
-    let sql = `SELECT * FROM todos ORDER BY createdAt LIMIT ? OFFSET ?`;
-
-    let limit = req.query.limit || 30;
-    let offset = req.query.offset || 0;
-
-    db.all(sql, [limit, offset], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(formatTodos(rows));
-    });
+    todoSvc.all({
+        limit: req.query.limit,
+        offset: req.query.offset
+    })
+        .then(todos => res.json(todos))
+        .catch(err => res.status(500).json({ error: err.message }));
 })
 
 app.post('/todos', (req, res) => {
@@ -130,23 +127,26 @@ const formatTodo = (todo) => ({
 });
 
 app.get('/todos/:id', function (req, res) {
-    let sql = `SELECT * FROM todos WHERE id=?`;
-
-    db.get(sql, [req.params.id], (err, row) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if(!row){
-            res.status(404).json({ error: "Not found." });
-            return;
-        }
-
-        res.json(row);
-    });
+    todoSvc.get(req.params.id)
+        .then(todo => {
+            if(todo){
+                res.json(todos)
+            }else{
+                res.status(404).json({ error: "Not found." });
+            }
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
 })
 
 app.patch('/todos/:id', (req, res) => {
+    todoSvc.patch(req.params.id, {
+        limit: req.query.limit,
+        offset: req.query.offset
+    })
+        .then(todos => res.json(todos))
+        .catch(err => res.status(500).json({ error: err.message }));
+
+
     const patchedValuesNames = [];
     const patchedValues = [];
 
