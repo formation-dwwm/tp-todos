@@ -1,7 +1,5 @@
 # TP: Todos REST
 
-> Add Tags ?
-
 ## API
 
 ### Quick-Start

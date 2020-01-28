@@ -1,3 +1,11 @@
+const formatTodos = (todos) => todos.map(formatTodo);
+const formatTodo = (todo) => ({
+    id: todo.id,
+    title: todo.title,
+    content: todo.content,
+    done: !!todo.done,  // Convert tinyint back to boolean
+    createdAt: todo.createdAt
+});
 
 class TodoService {
     constructor(db){

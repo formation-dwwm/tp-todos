@@ -130,7 +130,7 @@ app.get('/todos/:id', function (req, res) {
     todoSvc.get(req.params.id)
         .then(todo => {
             if(todo){
-                res.json(todos)
+                res.json(todo)
             }else{
                 res.status(404).json({ error: "Not found." });
             }
