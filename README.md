@@ -31,7 +31,6 @@ interface Todo {
 **`/api/todos/1`**
 
 **GET** Récupère informations du Todo avec id=1  
-**PUT** Remplace le Todo avec id=1  
 **PATCH** Met à jour le Todo avec id=1 avec les champs fournis  
 **DELETE** Supprime le Todo avec id=1  
 
