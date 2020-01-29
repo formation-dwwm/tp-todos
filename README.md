@@ -31,16 +31,23 @@ interface Todo {
 
 **`/api/v1/todos`**
 
-**GET** Récupérer la liste des Todos  
-**POST** Créer un Todo
+**GET** Récupérer la liste des Todos (deux options get: limit et offset)
+**POST** Créer un Todo avec les options fournies: title & content dans un objet JSON
 
 **`/api/v1/todos/1`**
 
 **GET** Récupère informations du Todo avec id=1  
-**PATCH** Met à jour le Todo avec id=1 avec les champs fournis 
+**PATCH** Met à jour le Todo avec id=1 avec les champs fournis: title & content & done dans un objet JSON 
 **DELETE** Supprime le Todo avec id=1  
 
+**Forme des réponses**  
+Si succès:  
+Liste des todos -> [{Todos}]  
+Un Todo -> voir schéma  
+PATCH et DELETE -> { success: true }  
 
+Si erreur:  
+{ error: string }
 
 ## Application Client
 
@@ -57,7 +64,7 @@ Pensez donc à utiliser un code structuré, à séparer les responsabilités, à
 L'application doit présenter au minimum trois interfaces à l'utilisateur, selon les modalités de votre choix :
 - Accès à la liste des Todos
 - Accès aux détails d'un Todo
-- Création/Modification d'un Todo
+- Création/Modification/Suppression d'un Todo
 
 #### Elements demandés
 
@@ -65,7 +72,7 @@ L'application doit présenter au minimum trois interfaces à l'utilisateur, selo
 Concevoir et développer l'application client avec les trois interfaces demandées.
 
 **Todo or not to do**  
-Le statut "terminé" des Todos doit pouvoir être modifié depuis la liste des todos comme depuis les details de l'un. De la même façon il doit pouvoir être supprimé.
+Le statut "terminé" des Todos doit pouvoir être modifié depuis la liste des todos comme depuis les details de l'un. De la même façon il doit pouvoir être modifié et supprimé au moins depuis les détails.
 
 **What's in the box**  
 Cliquer sur le titre d'un Todo depuis la liste doit afficher les détails de celui-ci.

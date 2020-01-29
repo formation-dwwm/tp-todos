@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const TodoService = require('./TodoService');
 
 const API_VER = 1;
-const API_BASE = `/api/${API_VER}`;
+const API_BASE = `/api/v${API_VER}`;
 
 const port = process.env.PORT || 3000;
 
