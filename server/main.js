@@ -99,41 +99,15 @@ app.get(API_BASE + '/todos', function (req, res) {
 })
 
 app.post(API_BASE + '/todos', (req, res) => {
-    const sql = `
-    INSERT INTO todos (title, content, done, createdAt) VALUES ($title, $content, $done, $createdAt)
-    `;
-    const params = {
-        $title: req.body.title,
-        $content: req.body.content || "",
-        $done: false,
-        $createdAt: new Date()
+    if(!req.body.title || req.body.title == ""){
+        res.status(500).json({ error: "Property title is required to create a Todo." })
+        return;
     }
-    db.run(sql, params, function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        const todoId = this.lastID;
-        const newTodo = {
-            id: todoId,
-            title: params.$title,
-            content: params.$content,
-            done: !!params.$done,
-            createdAt: params.$createdAt
-        };
-
-        res.json(formatTodo(newTodo));
-    })
+    todoSvc.create(req.body.title, req.body.content)
+        .then(todo => res.json(todo))
+        .catch(err => res.status(500).json({ error: err.message }));
 })
 
-const formatTodos = (todos) => todos.map(formatTodo);
-const formatTodo = (todo) => ({
-    id: todo.id,
-    title: todo.title,
-    content: todo.content,
-    done: !!todo.done,  // Convert tinyint back to boolean
-    createdAt: todo.createdAt
-});
 
 app.get(API_BASE + '/todos/:id', function (req, res) {
     todoSvc.get(req.params.id)
@@ -148,50 +122,17 @@ app.get(API_BASE + '/todos/:id', function (req, res) {
 })
 
 app.patch(API_BASE + '/todos/:id', (req, res) => {
-    todoSvc.patch(req.params.id, {
-        limit: req.query.limit,
-        offset: req.query.offset
-    })
-        .then(todos => res.json(todos))
-        .catch(err => res.status(500).json({ error: err.message }));
-
-
-    const patchedValuesNames = [];
-    const patchedValues = [];
-
-    ["title", "content", "done"].forEach(key => {
-        if(req.body[key]){
-            patchedValuesNames.push(key);
-            patchedValues.push(req.body[key]);
-        }
-    });
-
-    const sql = `
-    UPDATE todos SET ${
-        patchedValuesNames.map(n => `${n}=?`).join(', ')
-    } WHERE id=?
-    `;
+    const data = req.body;
     
-    db.run(sql, [...patchedValues, req.params.id], function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ success: true });
-    });
+    todoSvc.patch(req.params.id, data)
+        .then(success => res.json(success))
+        .catch(err => res.status(500).json({ error: err.message }));
 })
 
 app.delete(API_BASE + '/todos/:id', (req, res) => {
-    const sql = `
-    DELETE FROM todos WHERE id=?
-    `;
-    db.run(sql, [req.params.id], function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ success: true });
-    });
+    todosSvc.remove(req.params.id)
+        .then(success => res.json(success))
+        .catch(err => res.status(500).json({ error: err.message }));
 })
 
 app.listen(port, function () {

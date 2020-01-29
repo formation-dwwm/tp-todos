@@ -51,6 +51,79 @@ class TodoService {
             });
         });
     }
+
+    create(title, content = ""){
+        return new Promise((resolve, reject) => {
+            const sql = `
+            INSERT INTO todos (title, content, done, createdAt) VALUES ($title, $content, $done, $createdAt)
+            `;
+            const params = {
+                $title: title,
+                $content: content,
+                $done: false,
+                $createdAt: new Date()
+            }
+            db.run(sql, params, function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                const todoId = this.lastID;
+                const newTodo = {
+                    id: todoId,
+                    title: params.$title,
+                    content: params.$content,
+                    done: !!params.$done,
+                    createdAt: params.$createdAt
+                };
+
+                resolve(formatTodo(newTodo));
+            })
+        })
+    }
+
+    patch(id, data){
+        return new Promise((resolve, reject) => {
+            const patchedValuesNames = [];
+            const patchedValues = [];
+
+            ["title", "content", "done"].forEach(key => {
+                if(data[key]){
+                    patchedValuesNames.push(key);
+                    patchedValues.push(data[key]);
+                }
+            });
+
+            const sql = `
+            UPDATE todos SET ${
+                patchedValuesNames.map(n => `${n}=?`).join(', ')
+            } WHERE id=?
+            `;
+            
+            db.run(sql, [...patchedValues, id], function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve({ success: true });
+            });
+        })
+    }
+
+    remove(id){
+        return new Promise((resolve, reject) => {
+            const sql = `
+            DELETE FROM todos WHERE id=?
+            `;
+            db.run(sql, [id], function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve({ success: true });
+            });
+        })
+    }
 }
 
 module.exports = TodoService;
