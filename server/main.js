@@ -7,6 +7,8 @@ const TodoService = require('./TodoService');
 const API_VER = 1;
 const API_BASE = `/api/${API_VER}`;
 
+const port = process.env.PORT || 3000;
+
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(path.resolve(__dirname, './data/todos.db'), (err) => {
     if (err) {
@@ -192,6 +194,6 @@ app.delete(API_BASE + '/todos/:id', (req, res) => {
     });
 })
 
-app.listen(3000, function () {
-  console.log('Server started, API listening on http://localhost:3000/ !')
+app.listen(port, function () {
+  console.log(`Server started, API listening on http://localhost:${port}/ !`)
 })
