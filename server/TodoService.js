@@ -14,6 +14,76 @@ class TodoService {
         }
 
         this.db = db;
+
+        return this.initDatabase();
+    }
+
+    initDatabase(){
+        new Promise((resolve, reject) => {
+            this.checkTableExistance()
+                .then(exists => {
+                    if(!exists){
+                        return this.createDatabase()
+                                .then(() => this.createInitialData())
+                                .then(() => resolve(true));
+                    }else{
+                        resolve(false);
+                    }
+                })
+                .catch(err => reject(err));
+        })
+        
+    }
+
+    checkTableExistance(){
+        return new Promise((resolve, reject) => {
+            // Check if table exists
+            const sql = `
+            SELECT 
+                name
+            FROM 
+                sqlite_master 
+            WHERE 
+                type ='table' AND 
+                name LIKE 'todos';
+            `;
+            this.db.get(sql, [], (err, row) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+        
+                resolve(!!row);
+            });
+
+        })
+    }
+
+    createDatabase(){
+        return new Promise((resolve, reject) => {
+            // Create table and seed data
+            const sql = `
+            CREATE TABLE todos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                content TEXT,
+                done TINYINT(1) NOT NULL,
+                createdAt DATETIME NOT NULL
+            );
+            `;
+            this.db.run(sql, [], function(err){
+                if(err){ 
+                    reject(err);
+                    return; 
+                }
+                resolve();
+            });
+        })
+    }
+
+    createInitialData(){
+        // Seed data
+        return this.create("First Todo", "Create Todo App !");
     }
 
     all({ limit, offset }){
@@ -63,7 +133,7 @@ class TodoService {
                 $done: false,
                 $createdAt: new Date()
             }
-            db.run(sql, params, function(err) {
+            this.db.run(sql, params, function(err) {
                 if (err) {
                     reject(err);
                     return;
@@ -100,7 +170,7 @@ class TodoService {
             } WHERE id=?
             `;
             
-            db.run(sql, [...patchedValues, id], function(err) {
+            this.db.run(sql, [...patchedValues, id], function(err) {
                 if (err) {
                     reject(err);
                     return;
@@ -115,7 +185,7 @@ class TodoService {
             const sql = `
             DELETE FROM todos WHERE id=?
             `;
-            db.run(sql, [id], function(err) {
+            this.db.run(sql, [id], function(err) {
                 if (err) {
                     reject(err);
                     return;

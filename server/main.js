@@ -14,60 +14,7 @@ const db = new sqlite3.Database(path.resolve(__dirname, './data/todos.db'), (err
     if (err) {
       throw err;
     }
-    console.log('Connected to the in-memory SQlite database.');
-
-    // Check if table exists
-    const sql = `
-    SELECT 
-        name
-    FROM 
-        sqlite_master 
-    WHERE 
-        type ='table' AND 
-        name LIKE 'todos';
-    `;
-
-    
-    db.get(sql, [], (err, row) => {
-        if(err){
-            throw err;
-        }
-
-        if(!row){
-            // Create table and seed data
-            const sql = `
-            CREATE TABLE todos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                content TEXT,
-                done TINYINT(1) NOT NULL,
-                createdAt DATETIME NOT NULL
-            );
-            `;
-            db.run(sql, [], function(err){
-                if(err){ throw err; }
-
-                // Seed data
-                const sql = `
-                INSERT INTO todos (title, content, done, createdAt) VALUES ($title, $content, $done, $createdAt)
-                `;
-                const params = {
-                    $title: "First Todo",
-                    $content: "Create Todo App !",
-                    $done: false,
-                    $createdAt: new Date()
-                }
-                db.run(sql, params, function(err) {
-                    if (err) {
-                      throw err;
-                    }
-                    console.log(`Seed data inserted ${this.changes}`);
-                })
-            })
-        }
-
-        console.log("Database ready !");
-    });
+    console.log('Connected to the SQlite database.');
   });
 
 const todoSvc = new TodoService(db);
@@ -130,7 +77,7 @@ app.patch(API_BASE + '/todos/:id', (req, res) => {
 })
 
 app.delete(API_BASE + '/todos/:id', (req, res) => {
-    todosSvc.remove(req.params.id)
+    todoSvc.remove(req.params.id)
         .then(success => res.json(success))
         .catch(err => res.status(500).json({ error: err.message }));
 })
