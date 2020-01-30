@@ -158,7 +158,7 @@ class TodoService {
             const patchedValues = [];
 
             ["title", "content", "done"].forEach(key => {
-                if(data[key]){
+                if(key in data){
                     patchedValuesNames.push(key);
                     patchedValues.push(data[key]);
                 }
