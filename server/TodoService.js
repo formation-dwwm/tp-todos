@@ -194,6 +194,25 @@ class TodoService {
             });
         })
     }
+
+    count(){
+        return new Promise((resolve, reject) => {
+            let sql = `SELECT count(*) FROM todos`;
+
+            this.db.get(sql, [], (err, row) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                if(!row){
+                    resolve(null);
+                    return;
+                }
+
+                resolve(row['count(*)']);
+            });
+        });
+    }
 }
 
 module.exports = TodoService;
